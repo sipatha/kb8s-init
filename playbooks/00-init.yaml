@@ -30,3 +30,6 @@
         path: /etc/fstab
         regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
         replace: '# \1'
+    
+    - name: Reboot the server for swap changes to take effect
+       reboot: 
