@@ -1,0 +1,32 @@
+- hosts: "*"
+  tasks:
+    - name: Update software repo list
+      apt:
+        update_cache: yes
+        upgrade: 'yes'
+
+    - name: Set to my timezone
+      shell: timedatectl set-timezone Africa/Johannesburg
+
+    - name: Stop timesyncd for update
+      systemd:
+        name: systemd-timesyncd.service
+        state: stopped
+
+    - name: Copy timesyncd config
+      template: src=../templates/timesyncd.conf dest=/etc/systemd/timesyncd.conf
+
+    - name: Start timesyncd service
+      systemd:
+        name: systemd-timesyncd.service
+        state: started
+
+    - name: Diable SWAP 1 of 2
+      shell: |
+        swapoff -a
+
+    - name: Disable Swap 2 of 2
+      replace:
+        path: /etc/fstab
+        regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
+        replace: '# \1'

@@ -1,0 +1,54 @@
+- hosts: "*"
+  tasks:
+    - name: Create crio configuration
+      template: src=../templates/crio.conf dest=/etc/modules-load.d/crio.conf
+
+    - name: Run modprobe overlay
+      shell: modprobe overlay
+
+    - name: Run modprobe br_netfilter
+      shell: modprobe br_netfilter
+
+    - name: Create 99-kubernetes-cri.conf
+      template: src=../templates/99-kubernetes-cri.conf dest=/etc/sysctl.d/99-kubernetes-cri.conf
+
+    - name: Run sysctl system
+      shell: sysctl --system
+
+    - name: Add CRIO apt repo-1
+      apt_repository:
+        repo: deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_20.04/ /
+        state: present
+        update_cache: 'no'
+        filename: devel:kubic:libcontainers:stable.list
+
+    - name: Add CRIO apt repo-2
+      apt_repository:
+        repo: deb http://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable:/cri-o:/1.20/xUbuntu_20.04/ /
+        state: present
+        update_cache: 'no'
+        filename: devel:kubic:libcontainers:stable:cri-o:1.20.list
+
+    - name: Install crio-1 repo key
+      apt_key:
+        url: https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_20.04/Release.key
+        state: present
+
+    - name: Install crio-2 repo key
+      apt_key:
+        url: https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable:cri-o:1.20/xUbuntu_20.04/Release.key
+        state: present
+
+    - name: Install container runtime
+      apt:
+        package: cri-o, cri-o-runc
+        install_recommends: no
+        autoclean: yes
+        update_cache: yes
+
+    - name: Start Crio Service
+      systemd:
+        daemon_reload: 'yes'
+        enabled: 'yes'
+        name: 'crio'
+        state: 'started'

@@ -1,0 +1,35 @@
+- hosts: "*"
+  tasks:
+    - name: Install Kubernetes repo key
+      become: true
+      shell: curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+
+    - name: Install kubernetes prerequisites
+      apt:
+        package: apt-transport-https, curl, wget
+        install_recommends: no
+        autoclean: yes
+        update_cache: yes
+        state: present
+
+    - name: Add Kubernetes apt repo
+      apt_repository:
+        repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+        state: present
+        update_cache: 'no'
+        filename: kubernetes.list
+
+    - name: Install Kubernetes
+      apt:
+        package: kubelet, kubeadm, kubectl
+        install_recommends: no
+        autoclean: yes
+        update_cache: yes
+
+    - name: Start Kubelet Service
+      systemd:
+        daemon_reload: 'yes'
+        enabled: 'yes'
+        name: 'crio'
+        state: 'started'
+

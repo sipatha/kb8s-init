@@ -1,0 +1,14 @@
+[nodes:vars]
+ansible_user=kadmin
+ansible_password=kadmin
+ansible_become=yes
+ansible_become_method=sudo 
+ansible_become_pass=kadmin
+
+[nodes]
+kb01.vmbt.local
+kb02.vmbt.local
+kb03.vmbt.local
+
+[master]
+kb01.vmbt.local
