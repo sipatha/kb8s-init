@@ -6,9 +6,9 @@ ansible_become_method=sudo
 ansible_become_pass=kadmin
 
 [nodes]
-kb01.vmbt.local
-kb02.vmbt.local
-kb03.vmbt.local
+kb01.lab.kb.lan
+kb02.lab.kb.lan
+kb03.lab.kb.lan
 
 [master]
-kb01.vmbt.local
+kb01.lab.kb.lan
